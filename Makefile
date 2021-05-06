@@ -5,20 +5,23 @@ GDB=gdb
 QEMU=qemu-system-x86_64
 
 CCFLAGS=-std=c11 -g -Wall -Wextra -Wpedantic -Wstrict-aliasing -Wno-pointer-arith -Wno-unused-parameter
-CCFLAGS+=-nostdlib -nostdinc -ffreestanding -fno-pie -fno-stack-protector
+CCFLAGS+=-nostdlib -ffreestanding -fno-pie -fno-stack-protector
 CCFLAGS+=-fno-builtin-function -fno-builtin
 ASFLAGS=-g
 LDFLAGS=
 
-BOOT_SRCS_DIR=arch/x86_64/boot
-BOOT_SRCS=$(wildcard $(BOOT_SRCS_DIR)/*.S)
-BOOT_OBJS=$(BOOT_SRCS:.S=.o)
+ARCH_SRCS_DIR=arch/x86_64
+ARCH_S_SRCS=$(wildcard $(ARCH_SRCS_DIR)/boot/*.S)
+ARCH_C_SRCS=$(wildcard $(ARCH_SRCS_DIR)/*.c)
+ARCH_OBJS=$(ARCH_S_SRCS:.S=.o) $(ARCH_C_SRCS:.c=.o)
 
 KERNEL_C_SRCS=$(wildcard kernel/*.c)
 KERNEL_S_SRCS=$(wildcard kernel/*.S)
 KERNEL_OBJS=$(KERNEL_C_SRCS:.c=.o) $(KERNEL_S_SRCS:.S=.o)
 
-TARGETS=./targets/x86_64
+INCLUDE_DIR=include
+
+TARGETS=targets/x86_64
 KERNEL_BIN=$(TARGETS)/iso/boot/kernel.bin
 KERNEL_ISO=$(TARGETS)/kernel.iso
 KERNEL_LINK=$(TARGETS)/link.ld
@@ -31,12 +34,12 @@ clean:
 	rm -f $(KERNEL_BIN) $(KERNEL_ISO)
 
 %.o: %.c
-	$(CC) -o $@ -c $< $(CCFLAGS)
+	$(CC) -o $@ -c $< $(CCFLAGS) -I$(INCLUDE_DIR)
 %.o: %.S
-	$(AS) -o $@ -c $< $(ASFLAGS) -I$(BOOT_SRCS_DIR)
+	$(AS) -o $@ -c $< $(ASFLAGS)
 
-kernel_bin: $(BOOT_OBJS)
-	$(LD) -o $(KERNEL_BIN) $^ -T$(KERNEL_LINK)
+kernel_bin: $(ARCH_OBJS) $(KERNEL_OBJS)
+	$(LD) -o $(KERNEL_BIN) $^ -T $(KERNEL_LINK)
 
 kernel_iso: kernel_bin
 	grub-mkrescue -d /usr/lib/grub/i386-pc -o $(KERNEL_ISO) $(GRUB_SRC)
