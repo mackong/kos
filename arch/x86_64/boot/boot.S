@@ -87,9 +87,9 @@ check_long_mode:
 
 error:
 	/* print "ERR: X" where X is the error code */
-	mov $0x4f524f45, 0xb8000
-	mov $0x4f3a4f52, 0xb8004
-	mov $0x4f204f20, 0xb8008
+	movl $0x4f524f45, 0xb8000
+	movl $0x4f3a4f52, 0xb8004
+	movl $0x4f204f20, 0xb8008
 	movb %al, 0xb800a
 	hlt
 
