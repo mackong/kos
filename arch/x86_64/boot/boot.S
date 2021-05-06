@@ -1,12 +1,31 @@
-.code32
+.section .multiboot_header
 
-.section .text.prologue
+multiboot_header:
+	/* magic number */
+	.long 0xe85250d6
+	/* ISA: i386 */
+	.long 0
+	/* Header length */
+	.long multiboot_header_end - multiboot_header
+	/* checksum */
+	.long -(0xe85250d6 + 0 + (multiboot_header_end - multiboot_header))
+	/* tag */
+	.short 0
+	.short 0
+	.long 8
+multiboot_header_end:
 
-.extern long_mode_start
+	.code32
+	.section .text
 
-.globl _start
-	.type _start, @function
-_start:
+	.globl _start32
+	.type _start32, @function
+_start32:
+	jmp multiboot_entry
+
+	.align 8
+
+multiboot_entry:
 	mov $stack_top, %esp
 
 	call check_multiboot
@@ -17,8 +36,11 @@ _start:
 	call enable_paging
 
 	lgdt gdtp
-	jmp long_mode_start
+	/* 0x08 is the first gdt entry */
+	/* see https://stackoverflow.com/questions/23978486/far-jump-in-gdt-in-bootloader */
+	ljmp $0x0008, $_start64
 
+	cli  /* Should never here */
 	hlt
 
 check_multiboot:
@@ -65,9 +87,9 @@ check_long_mode:
 
 error:
 	/* print "ERR: X" where X is the error code */
-	movl $0x4f524f45, 0xb8000
-	movl $0x4f3a4f52, 0xb8004
-	movl $0x4f204f20, 0xb8008
+	mov $0x4f524f45, 0xb8000
+	mov $0x4f3a4f52, 0xb8004
+	mov $0x4f204f20, 0xb8008
 	movb %al, 0xb800a
 	hlt
 
@@ -77,7 +99,7 @@ setup_page_tables:
 	mov %eax, page_table_l4
 
 	mov $page_table_l2, %eax
-	or $0b11, %eax  /* present, writable */
+	orl $0b11, %eax  /* present, writable */
 	mov %eax, page_table_l3
 
 	mov $0, %ecx  /* counter */
@@ -117,8 +139,8 @@ enable_paging:
 
 	ret
 
-.section .bss
-.align 4096
+	.section .bss
+	.align 4096
 page_table_l4:
 	.fill 0x1000
 page_table_l3:
@@ -129,11 +151,33 @@ stack_bottom:
 	.fill 0x4000
 stack_top:
 
-.section .rodata
-gdt_start:
-	.quad 0
-gdt_code_segment:
-	.quad (1 << 43) | (1 << 44) | (1 << 47) | (1 << 53)
+	.section .rodata
 gdtp:
-	.short . - gdt_start - 1
+	.short gdt_end - gdt_start - 1
 	.quad gdt_start
+gdt_start:
+gdt_null_entry:
+	.quad 0
+gdt_kernel_code_entry:
+	.quad (1 << 43) | (1 << 44) | (1 << 47) | (1 << 53)
+gdt_end:
+
+
+	/* code for long mode */
+	.code64
+	.section .text
+
+	.extern kmain
+
+	.globl _start64
+	.type _start64, @function
+_start64:
+	movw $0, %ax
+	movw %ax, %ss
+	movw %ax, %ds
+	movw %ax, %es
+	movw %ax, %fs
+	movw %ax, %gs
+
+	call kmain
+	hlt
