@@ -1,3 +1,7 @@
 targets/x86_64/iso/boot/kernel.bin
 targets/x86_64/kernel.iso
 *.o
+
+# clangd
+.cache
+compile_commands.json
