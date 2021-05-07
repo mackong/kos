@@ -3,18 +3,18 @@
 #define N_COLS 80
 #define N_ROWS 25
 
-struct Char {
+struct screen_char {
         uint8_t c;
         uint8_t color;
 };
 
-static struct Char *buffer = (struct Char *) 0xb8000;
+static struct screen_char *buffer = (struct screen_char *) 0xb8000;
 static size_t col = 0;
 static size_t row = 0;
 static uint8_t screen_color = SCREEN_COLOR_WHITE | SCREEN_COLOR_BLACK << 4;
 
 static void clear_row(size_t row) {
-        struct Char empty = (struct Char) {
+        struct screen_char empty = (struct screen_char) {
                 .c = ' ',
                 .color = screen_color,
         };
@@ -34,7 +34,7 @@ static void screen_write_newline() {
 
         for (size_t row = 1; row < N_ROWS; row++) {
                 for (size_t col = 0; col < N_COLS; col++) {
-                        struct Char c = buffer[col + N_COLS * row];
+                        struct screen_char c = buffer[col + N_COLS * row];
                         buffer[col + N_COLS * (row - 1)] = c;
                 }
         }
@@ -52,7 +52,7 @@ static void screen_write_char(const char c) {
                 screen_write_newline();
         }
 
-        buffer[col + row * N_COLS] = (struct Char) {
+        buffer[col + row * N_COLS] = (struct screen_char) {
                 .c = (uint8_t) c,
                 .color = screen_color,
         };
