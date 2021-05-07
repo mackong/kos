@@ -25,7 +25,6 @@ enum {
 
 void screen_clear();
 void screen_set_color(uint8_t fg, uint8_t bg);
-void screen_print_char(const char c);
-void screen_print_str(const char *s);
+void screen_write(const char *s);
 
 #endif /* SCREEN_H */
