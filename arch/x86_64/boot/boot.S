@@ -1,4 +1,6 @@
-.section .multiboot_header
+	#include "gdt.h"
+
+	.section .multiboot_header
 
 multiboot_header:
 	/* magic number */
@@ -159,9 +161,9 @@ gdt_start:
 gdt_null_entry:
 	.quad 0
 gdt_kernel_code_entry:
-	.quad (1 << 43) | (1 << 44) | (1 << 47) | (1 << 53)
+	.quad GDT_KERNEL_CODE_ENTRY
 gdt_kernel_data_entry:
-	.quad (1 << 41) | (1 << 44) | (1 << 47) | (1 << 53)
+	.quad GDT_KERNEL_DATA_ENTRY
 gdt_end:
 
 

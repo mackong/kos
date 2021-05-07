@@ -1,5 +1,4 @@
 CC=gcc
-AS=as
 LD=ld
 GDB=gdb
 QEMU=qemu-system-x86_64
@@ -36,7 +35,7 @@ clean:
 %.o: %.c
 	$(CC) -o $@ -c $< $(CCFLAGS) -I$(INCLUDE_DIR)
 %.o: %.S
-	$(AS) -o $@ -c $< $(ASFLAGS)
+	$(CC) -o $@ -c $< $(ASFLAGS)
 
 $(KERNEL_BIN): $(ARCH_OBJS) $(KERNEL_OBJS)
 	$(LD) -o $@ $^ -T $(KERNEL_LINK)
