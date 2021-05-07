@@ -36,7 +36,7 @@ multiboot_entry:
 	call enable_paging
 
 	lgdt gdtp
-	/* 0x08 is the first gdt entry */
+	/* 0x0008 is the first gdt entry, which is gdt_kernel_code_entry */
 	/* see https://stackoverflow.com/questions/23978486/far-jump-in-gdt-in-bootloader */
 	ljmp $0x0008, $_start64
 
@@ -160,6 +160,8 @@ gdt_null_entry:
 	.quad 0
 gdt_kernel_code_entry:
 	.quad (1 << 43) | (1 << 44) | (1 << 47) | (1 << 53)
+gdt_kernel_data_entry:
+	.quad (1 << 41) | (1 << 44) | (1 << 47) | (1 << 53)
 gdt_end:
 
 
@@ -172,7 +174,9 @@ gdt_end:
 	.globl _start64
 	.type _start64, @function
 _start64:
-	movw $0, %ax
+	/* 0x0010 is the second gdt entry, which is gdt_kernel_data_entry */
+	/* see https://stackoverflow.com/questions/23978486/far-jump-in-gdt-in-bootloader */
+	movw $0x0010, %ax
 	movw %ax, %ss
 	movw %ax, %ds
 	movw %ax, %es
