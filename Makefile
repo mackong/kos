@@ -38,31 +38,32 @@ clean:
 %.o: %.S
 	$(AS) -o $@ -c $< $(ASFLAGS)
 
-kernel_bin: $(ARCH_OBJS) $(KERNEL_OBJS)
-	$(LD) -o $(KERNEL_BIN) $^ -T $(KERNEL_LINK)
+$(KERNEL_BIN): $(ARCH_OBJS) $(KERNEL_OBJS)
+	$(LD) -o $@ $^ -T $(KERNEL_LINK)
 
-kernel_iso: kernel_bin
-	grub-mkrescue -d /usr/lib/grub/i386-pc -o $(KERNEL_ISO) $(GRUB_SRC)
+$(KERNEL_ISO): $(KERNEL_BIN)
+	grub-mkrescue -d /usr/lib/grub/i386-pc -o $@ $(GRUB_SRC)
 
-run:
+run: $(KERNEL_ISO)
 	$(QEMU) \
 		-display sdl \
-		-cdrom $(KERNEL_ISO) \
+		-cdrom $< \
 		-d cpu_reset \
 		-monitor stdio \
 		-audiodev sdl,id=sdl,out.frequency=48000,out.channels=2,out.format=s32 \
 		-device sb16,audiodev=sdl
 
-debug:
+debug: $(KERNEL_ISO)
 	$(QEMU) \
 		-display sdl \
-		-cdrom $(KERNEL_ISO) \
+		-cdrom $< \
 		-d cpu_reset \
 		-monitor stdio \
 		-audiodev sdl,id=sdl,out.frequency=48000,out.channels=2,out.format=s32 \
-		-device sb16,audiodev=sdl -s -S
+		-device sb16,audiodev=sdl \
+		-s -S
 
-gdb:
+gdb: $(KERNEL_BIN)
 	$(GDB) \
 		-iex "target remote :1234" \
 		-iex "symbol-file $(KERNEL_BIN)"
