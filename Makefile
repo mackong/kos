@@ -48,18 +48,20 @@ run: $(KERNEL_ISO)
 		-display sdl \
 		-cdrom $< \
 		-d cpu_reset \
-		-monitor stdio \
 		-audiodev sdl,id=sdl,out.frequency=48000,out.channels=2,out.format=s32 \
-		-device sb16,audiodev=sdl
+		-device sb16,audiodev=sdl \
+		-chardev stdio,id=com1,logfile=com1.log,signal=off \
+		-serial chardev:com1
 
 debug: $(KERNEL_ISO)
 	$(QEMU) \
 		-display sdl \
 		-cdrom $< \
 		-d cpu_reset \
-		-monitor stdio \
 		-audiodev sdl,id=sdl,out.frequency=48000,out.channels=2,out.format=s32 \
 		-device sb16,audiodev=sdl \
+		-chardev stdio,id=com1,logfile=com1.log,signal=off \
+		-serial chardev:com1 \
 		-s -S
 
 gdb: $(KERNEL_BIN)

@@ -5,3 +5,5 @@ targets/x86_64/kernel.iso
 # clangd
 .cache
 compile_commands.json
+
+com1.log
