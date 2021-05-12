@@ -1,4 +1,4 @@
-#include "screen.h"
+#include "arch/x86_64/screen.h"
 
 #define N_COLS 80
 #define N_ROWS 25
@@ -75,4 +75,7 @@ void screen_write(const char *s) {
         while ((c = *s++) != '\0') {
                 screen_write_char(c);
         }
+}
+
+void screen_init() {
 }

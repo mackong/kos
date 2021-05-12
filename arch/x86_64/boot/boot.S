@@ -186,4 +186,6 @@ _start64:
 	movw %ax, %gs
 
 	call kmain
+
+	cli
 	hlt

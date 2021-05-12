@@ -27,4 +27,6 @@ void screen_clear();
 void screen_set_color(uint8_t fg, uint8_t bg);
 void screen_write(const char *s);
 
+void screen_init();
+
 #endif /* SCREEN_H */
