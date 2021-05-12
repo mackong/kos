@@ -1,6 +1,5 @@
 #include "arch/x86_64/timer.h"
 #include "arch/x86_64/io.h"
-#include "arch/x86_64/isr.h"
 #include "arch/x86_64/irq.h"
 
 #define PIT_A 0x40
