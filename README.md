@@ -11,3 +11,4 @@ kos (kyc's operating system) is a simple operating system for x86_64 platform, m
 6. [tetris-os](https://github.com/jdah/tetris-os)
 7. [eggos](https://github.com/icexin/eggos.git)
 8. [x86_64 kernel boot](https://github.com/missimer/x86-64-kernel-boot.git)
+9. [Write Your Own 64-bit Operating System Kernel From Scratch](https://github.com/davidcallanan/os-series/tree/ep1)
