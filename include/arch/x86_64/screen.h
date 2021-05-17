@@ -23,10 +23,10 @@ enum {
         SCREEN_COLOR_WHITE = 15,
 };
 
+void screen_init();
 void screen_clear();
 void screen_set_color(uint8_t fg, uint8_t bg);
 void screen_write(const char *s);
-
-void screen_init();
+void screen_write_char(char c);
 
 #endif /* SCREEN_H */

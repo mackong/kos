@@ -15,16 +15,15 @@ static bool serial_is_transmit_fifo_empty(unsigned int com)
         return (bool) (inportb(SERIAL_LINE_STATUS_PORT(com)) & 0x20);
 }
 
-static void uart_write_char(char c) {
+void uart_init() {
         uint16_t base = SERIAL_COM1_BASE;
 
-        for (;;) {
-                if (serial_is_transmit_fifo_empty(base)) {
-                        break;
-                }
-	}
+        outportb(SERIAL_LINE_COMMAND_PORT(base), 0x80);
+        outportb(SERIAL_DATA_PORT(base), 115200/9600);
+        outportb(SERIAL_FIFO_COMMAND_PORT(base), 0);
 
-        outportb(base, (uint8_t) c);
+        outportb(SERIAL_LINE_COMMAND_PORT(base), 3);
+        outportb(SERIAL_FIFO_COMMAND_PORT(base), 0);
 }
 
 void uart_write(const char *s) {
@@ -36,13 +35,14 @@ void uart_write(const char *s) {
         }
 }
 
-void uart_init() {
+void uart_write_char(char c) {
         uint16_t base = SERIAL_COM1_BASE;
 
-        outportb(SERIAL_LINE_COMMAND_PORT(base), 0x80);
-        outportb(SERIAL_DATA_PORT(base), 115200/9600);
-        outportb(SERIAL_FIFO_COMMAND_PORT(base), 0);
+        for (;;) {
+                if (serial_is_transmit_fifo_empty(base)) {
+                        break;
+                }
+	}
 
-        outportb(SERIAL_LINE_COMMAND_PORT(base), 3);
-        outportb(SERIAL_FIFO_COMMAND_PORT(base), 0);
+        outportb(base, (uint8_t) c);
 }

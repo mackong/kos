@@ -42,22 +42,7 @@ static void screen_write_newline() {
         clear_row(N_COLS - 1);
 }
 
-static void screen_write_char(const char c) {
-        if (c == '\n') {
-                screen_write_newline();
-                return;
-        }
-
-        if (col > N_COLS) {
-                screen_write_newline();
-        }
-
-        buffer[col + row * N_COLS] = (struct screen_char) {
-                .c = (uint8_t) c,
-                .color = screen_color,
-        };
-
-        col++;
+void screen_init() {
 }
 
 void screen_clear() {
@@ -77,5 +62,20 @@ void screen_write(const char *s) {
         }
 }
 
-void screen_init() {
+void screen_write_char(char c) {
+        if (c == '\n') {
+                screen_write_newline();
+                return;
+        }
+
+        if (col > N_COLS) {
+                screen_write_newline();
+        }
+
+        buffer[col + row * N_COLS] = (struct screen_char) {
+                .c = (uint8_t) c,
+                .color = screen_color,
+        };
+
+        col++;
 }

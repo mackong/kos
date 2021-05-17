@@ -5,8 +5,7 @@
 
 #define TIMER_TPS 363
 
-uint64_t timer_get();
-
 void timer_init();
+uint64_t timer_get();
 
 #endif /* TIMER_H */

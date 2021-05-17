@@ -5,8 +5,7 @@
 
 #include "arch/x86_64/interrupt.h"
 
-void irq_install(size_t i, interrupt_handler handler);
-
 void irq_init();
+void irq_install(size_t i, interrupt_handler handler);
 
 #endif /* IRQ_H */
